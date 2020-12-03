@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="485.0" prefWidth="723.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comictore.controladores.FXMLMenuController">
+    <children>
+      <Group layoutX="60.0" layoutY="119.0">
+         <children>
+              <Button onAction="#btnComics" prefHeight="36.0" prefWidth="106.0" text="Comics/Manga" />
+            <Button layoutX="146.0" mnemonicParsing="false" onAction="#btnEditoriales" prefHeight="36.0" prefWidth="106.0" text="Editoriales" />
+            <Button layoutY="69.0" mnemonicParsing="false" onAction="#btnAutores" prefHeight="36.0" prefWidth="106.0" text="Autores" />
+            <Button layoutX="146.0" layoutY="69.0" mnemonicParsing="false" onAction="#btnClientes" prefHeight="36.0" prefWidth="106.0" text="Clientes" />
+         </children>
+      </Group>
+      <Label layoutX="146.0" layoutY="90.0" text="Administracion" />
+    </children>
+</AnchorPane>
