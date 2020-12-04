@@ -54,6 +54,18 @@ public class ListaEditoriales {
         return editoriales.get(i);
     }
     
+    public Editorial getEditorial(String nombre) {
+        for (Editorial edi : editoriales) {
+            if (edi.getNombre().equals(nombre)) {
+                return edi;
+            }
+        }
+        
+        return null;        
+    }
+    
+    
+    
     public int indexOfEditorial(Editorial edi) {
         return editoriales.indexOf(edi);
     }
@@ -77,8 +89,9 @@ public class ListaEditoriales {
     
     public boolean editorialRepetida(Editorial editorial) {
         
-        return editoriales.stream().anyMatch( (edi) -> (edi.equals(editorial)) );
-        
+        if (editorial != null)
+            return editoriales.stream().anyMatch( (edi) -> (edi.equals(editorial)) );
+        return false;
     }
     
     /**
@@ -120,5 +133,31 @@ public class ListaEditoriales {
     }
     
     
+    public Editorial getEditorialCod(int codigo){
+        
+        for (Editorial edit : editoriales) {
+            if (Integer.parseInt(edit.getCodigo() ) == codigo) {
+                return edit;
+            }
+        }
+        
+        return null;        
+    }
+    
+    public Editorial getEditorialMasComics() {
+        if (editoriales.isEmpty()) return null;
+        Editorial mayor = editoriales.get(0);
+        int masComic = mayor.getComics().largo();
+        
+        for (Editorial edit: editoriales) {
+            if (edit.getComics().largo() > masComic) {
+                mayor = edit;
+                masComic = mayor.getComics().largo();
+            }
+        }
+        
+        
+        return mayor;
+    }
     
 }

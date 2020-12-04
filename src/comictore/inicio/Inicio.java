@@ -1,9 +1,16 @@
 
 package comictore.inicio;
 
-import comictore.colecciones.*;
+import comictore.clases.clasesSQL.AutorSQL;
+import comictore.clases.clasesSQL.ComicSQL;
+import comictore.clases.clasesSQL.EditorialSQL;
 import comictore.clases.*;
-import java.text.ParseException;
+import comictore.clases.clasesSQL.ClienteSQL;
+import comictore.colecciones.*;
+
+
+
+
 /**
  *
  * @author javie
@@ -11,58 +18,152 @@ import java.text.ParseException;
 public class Inicio {
     
     
+    public static void guardarComics() {
+        
+        ComicSQL comicSQL = new ComicSQL();
+        Comic comic;
+        
+        for (int i = 0; i < Colecciones.getComics().largo(); i++) {
+            
+            comic = Colecciones.getComics().getComic(i);
+            // agregar comic a la base de datos si este no se encuentra en esta
+            if (comicSQL.getComic(comic.getCodigoI()) == null) {
+                comicSQL.insert(comic.getCodigoI(), comic.getNombre(), comic.getAnio(), comic.getPais(), comic.getEditorial().getCodigoI(), comic.getAutor().getIDI(), comic.getIdioma(), comic.getPrecio(), comic.getVentas(), comic.getStock());                             
+            }
+        }
+           
+    }
     
-    public static void cargar() throws ParseException {
+    public static void guardarAutores() {
+        
+        AutorSQL autorSQL = new AutorSQL();
+        Autor autor;
+        
+        for (int i = 0; i < Colecciones.getAutores().largo(); i++) {
+            
+            autor = Colecciones.getAutores().getAutor(i);
+            
+            if (autorSQL.getAutor(autor.getIDI()) == null) {
+                autorSQL.insert(autor.getIDI(), autor.getNombre(), autor.getNacionalidad(), autor.getFechaNacStr() );
+            }
+            
+        }
+        
+    }
     
-        ListaClientes clientes = new ListaClientes();
-        ListaComics comics = new ListaComics();
-        ListaEditoriales editoriales = new ListaEditoriales();
-        ListaAutores autores = new ListaAutores();
-
-        Cliente cliente = new Cliente("Juan", "Chilena");
-        Autor autor = new Autor("Alan Moore", "USA");
-        Editorial editorial = new Editorial("DC", "USA", 1920);
-        Comic comic = new Comic("Batman", autor, "USA", editorial, 1980, "Español", 10, 10);
+    public static void guardarEditoriales() {
         
-        autores.addAutor(autor);
-        autores.addAutor(new Autor("Stan Lee", "USA"));
-        autores.addAutor(new Autor("asdsad", "Estados Unidos"));
+        EditorialSQL editorialSQL = new EditorialSQL();
+        Editorial editorial;
         
-        editoriales.addEditorial(editorial);
-        editoriales.addEditorial(new Editorial("Marvel", "USA", 1929));
-        editoriales.getEditoriales().get(0).setComics(comics);
+        for (int i = 0; i < Colecciones.getEditoriales().largo(); i++) {
+            
+            editorial = Colecciones.getEditoriales().getEditorial(i);
+            
+            if (editorialSQL.getEditorial(editorial.getCodigoI()) == null) {
+                editorialSQL.insert(editorial.getCodigoI(), editorial.getNombre(), editorial.getPais(), editorial.getAnioFundacion() );
+            }
+            
+        }
+        
+    }
+    
+    public static void guardarClientes() {
+        
+        ClienteSQL clienteSQL = new ClienteSQL();
+        Cliente cliente;
+        
+        for (int i = 0; i < Colecciones.getClientes().largo(); i++) {
+            
+            cliente = Colecciones.getClientes().getCliente(i);
+            
+            if (clienteSQL.getCliente(cliente.getIDI()) == null) {
+                clienteSQL.insert(cliente.getIDI(), cliente.getNombre(), cliente.getNacionalidad(), cliente.getFechaNacStr(), cliente.getEmail(), cliente.getComicsFav(), cliente.getComicsVistos());
+            }
+            
+        }
         
         
-        comics.addComic(comic);
-        comics.addComic(new Comic("Batman", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics.addComic(new Comic("Superman", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics.addComic(new Comic("Wonder Woman", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics.addComic(new Comic("Watchmen", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics.addComic(new Comic("Flash", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics.addComic(new Comic("Spiderman", autores.getAutor(1), "USA", editoriales.getEditorial(1), 1980, "Español", 10, 10));
-        comics.addComic(new Comic("Spiderman 2", autores.getAutor(2), "USA", editoriales.getEditorial(1), 1980, "Español", 10, 10));
+    }
+    
+    public static void guardar() {
+        guardarAutores();
+        guardarEditoriales();
+        guardarComics();
+        guardarClientes();
+    }
+    
+    
+    public static void cargarAutores() {
         
-        ListaComics comics2 = new ListaComics();
-        comics2.addComic(comic);
-        comics2.addComic(new Comic("Wonder Woman", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics2.addComic(new Comic("Watchmen", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics2.addComic(new Comic("Flash", autor, "USA", editorial, 1980, "Español", 10, 10));
-        comics2.addComic(new Comic("Flash", autor, "USA", editorial, 1980, "Español", 10, 10));
+        AutorSQL autorSQL = new AutorSQL();
         
-        editoriales.getEditoriales().get(0).setComics(comics2);
+        ListaAutores listaAutores = new ListaAutores();
         
-        clientes.addCliente(cliente);
+        listaAutores.setAutores(autorSQL.select());
         
-        autores.getAutor(0).setComics(comics);
+        Colecciones.setAutores(listaAutores);
+                
+    }
+    
+    public static void cargarEditoriales() {
         
-        Colecciones.setClientes(clientes);
-        Colecciones.setComics(comics);
-        Colecciones.setAutores(autores);
-        Colecciones.setEditoriales(editoriales);
+        EditorialSQL editorialSQL = new EditorialSQL();
+        
+        ListaEditoriales listaEditoriales = new ListaEditoriales();
+        
+        listaEditoriales.setEditoriales(editorialSQL.select());
+        
+        Colecciones.setEditoriales(listaEditoriales);
+        
+    }
+    
+    public static void cargarComics() {
+        
+        ComicSQL comicSQL = new ComicSQL();
+        
+        ListaComics listaComics = new ListaComics();
+        
+        listaComics.setComics(comicSQL.select());
+        
+        Colecciones.setComics(listaComics);
+        
+    }
+    
+    public static void cargarClientes() {
+        
+        ClienteSQL clienteSQL = new ClienteSQL();
+        
+        ListaClientes listaClientes = new ListaClientes();
+        
+        listaClientes.setClientes(clienteSQL.select());
+        
+        Colecciones.setClientes(listaClientes);
+        
+    }
+    
+    public static void cargar() {
+        
+        cargarAutores();
+        cargarEditoriales();
+        cargarComics();
+        cargarClientes();
+        
+       /* ListaClientes listaClientes = new ListaClientes();
+        
+        try {
+            listaClientes.addCliente(new Cliente("Juan", "Chile"));
+        } catch (ParseException ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        Colecciones.setClientes(listaClientes);*/
+        
         
         Colecciones.getEditoriales().actualizarEditoriales();
         Colecciones.getAutores().actualizarAutores();
-       
+    
+     
     }
     
     

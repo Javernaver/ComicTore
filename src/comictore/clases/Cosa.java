@@ -6,6 +6,7 @@
 package comictore.clases;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -37,6 +38,11 @@ public abstract class Cosa implements Serializable {
     public String getCodigo() {
         return codigo.get();
     }
+    
+    public int getCodigoI(){
+        return Integer.parseInt(codigo.get());
+    }
+    
     
     public StringProperty getCodigoP() {
         return codigo;
@@ -102,10 +108,20 @@ public abstract class Cosa implements Serializable {
     @Override
     public int hashCode() {
 
-        int hash = 7;
-        hash = 13 + hash + this.nombre.get().hashCode() + this.pais.hashCode();
-        if (hash < 0)
-            return -hash;
+        int hash;
+        long hash2 = 7;
+        hash2 = 13 + hash2 + this.nombre.get().hashCode() + this.pais.hashCode();
+        if (hash2 < 0)
+            hash2 = -hash2;        
+        if (hash2 > Integer.MAX_VALUE || (Math.log10(hash2) + 1) > 7) {          
+            hash2 /= 1000;            
+        }
+        if ((Math.log10(hash2) + 1) < 7) {
+            hash2 *= 10;
+        }
+        
+        hash = (int) hash2;
+       
         return hash;
             
     }
@@ -114,5 +130,17 @@ public abstract class Cosa implements Serializable {
         this.codigo.set(Integer.toString(hashCode()) );
     }
     
+    public static Comparator<Cosa> porCodigoMayorMenor = new Comparator<Cosa>() {
+        
+        @Override
+        public int compare(Cosa o1, Cosa o2) {
+            int cod1 = o1.getCodigoI();
+            int cod2 = o1.getCodigoI();
+            
+            return cod2-cod1;
+        }
+        
+        
+    };
   
 }

@@ -7,6 +7,7 @@ package comictore.controladores;
 
 import comictore.clases.Cliente;
 import comictore.clases.Comic;
+import comictore.clases.clasesSQL.ClienteSQL;
 import comictore.colecciones.ListaComics;
 import comictore.inicio.Colecciones;
 import comictore.interfaces.BotonesTipicos;
@@ -69,6 +70,7 @@ public class ClientesController implements Initializable, BotonesTipicos {
     private final ObservableList<Cliente> clientesData = Colecciones.getClientes().getClientesObs();
     private ObservableList<Comic> comicsData;
     
+    private final ClienteSQL clienteSQL = new ClienteSQL();
     
     public void mostrarDetCliente(Cliente cliente) {
         
@@ -131,7 +133,7 @@ public class ClientesController implements Initializable, BotonesTipicos {
        
     }    
 
-    public boolean ventanaEdicion(Cliente cliente) {
+    public boolean ventanaEdicion(Cliente cliente, boolean esEdicion) {
         try {
                       
             FXMLLoader loader = new FXMLLoader();
@@ -152,6 +154,7 @@ public class ClientesController implements Initializable, BotonesTipicos {
             EditClientesController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setCliente(cliente);
+            controller.setEdicion(esEdicion);
  
             dialogStage.showAndWait();
             
@@ -171,7 +174,8 @@ public class ClientesController implements Initializable, BotonesTipicos {
         Colecciones.getClientes().setClientesObs(clientesData);
         
         Cliente cliente = new Cliente();
-        if (ventanaEdicion(cliente)) {
+        if (ventanaEdicion(cliente, false)) {
+            clienteSQL.insert(cliente.getIDI(), cliente.getNombre(), cliente.getNacionalidad(), cliente.getFechaNacStr(), cliente.getEmail(), cliente.getComicsFav(), cliente.getComicsVistos());
             tablaClientes.getItems().add(cliente);
         }
         
@@ -185,9 +189,16 @@ public class ClientesController implements Initializable, BotonesTipicos {
         Colecciones.getClientes().setClientesObs(clientesData);
         
         if (cliente != null) {
-            if (ventanaEdicion(cliente)) {
+            
+            int codigo = cliente.getIDI();
+            
+            if (ventanaEdicion(cliente, true)) {
+                clienteSQL.delete(codigo);
+                clienteSQL.insert(cliente.getIDI(), cliente.getNombre(), cliente.getNacionalidad(), cliente.getFechaNacStr(), cliente.getEmail(), cliente.getComicsFav(), cliente.getComicsVistos());
                 mostrarDetCliente(cliente);
             }
+            
+            
         }
         else {
             Utilidades.sinSeleccionar("Cliente");
@@ -204,6 +215,7 @@ public class ClientesController implements Initializable, BotonesTipicos {
         
         if (indice >= 0) {
             if (Utilidades.estaSeguro("Cliente")) {
+                clienteSQL.delete(tablaClientes.getSelectionModel().getSelectedItem().getIDI());
                 tablaClientes.getItems().remove(indice);
             }
         }
@@ -229,10 +241,10 @@ public class ClientesController implements Initializable, BotonesTipicos {
         
         Scene menuScene = new Scene(root1);
         
-        Stage app_Stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage nuevaStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        app_Stage.setScene(menuScene);
-        app_Stage.show();
+        nuevaStage.setScene(menuScene);
+        nuevaStage.show();
     }
     
     
@@ -278,10 +290,18 @@ public class ClientesController implements Initializable, BotonesTipicos {
             
             ListaComics comics = tablaClientes.getSelectionModel().getSelectedItem().getComicsFav();
             
+            Cliente cliente = tablaClientes.getSelectionModel().getSelectedItem();
+            
+            int codigo = cliente.getIDI();
+            
             if ( ventanaAgregarComic(comics) ){
                 comicsData = tablaClientes.getSelectionModel().getSelectedItem().getComicsFav().getComicsObs();
                 tablaComics.setItems(comicsData);
+                clienteSQL.delete(codigo);
+                clienteSQL.insert(cliente.getIDI(), cliente.getNombre(), cliente.getNacionalidad(), cliente.getFechaNacStr(), cliente.getEmail(), cliente.getComicsFav(), cliente.getComicsVistos());
+                
             } 
+            
         }
         else {
             Utilidades.sinSeleccionar("Cliente");

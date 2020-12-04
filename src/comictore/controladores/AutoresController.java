@@ -7,6 +7,7 @@ package comictore.controladores;
 
 import comictore.clases.Autor;
 import comictore.clases.Comic;
+import comictore.clases.clasesSQL.AutorSQL;
 import comictore.colecciones.ListaComics;
 import comictore.inicio.Colecciones;
 import comictore.interfaces.BotonesTipicos;
@@ -64,6 +65,7 @@ public class AutoresController implements Initializable, BotonesTipicos {
     private final ObservableList<Autor> autoresData = Colecciones.getAutores().getAutoresObs();
     private ObservableList<Comic> comicsData;
     
+    private final AutorSQL autorSQL = new AutorSQL();
     
     public void mostrarDetAutor(Autor autor) {
         
@@ -131,7 +133,7 @@ public class AutoresController implements Initializable, BotonesTipicos {
     }    
    
     
-    public boolean ventanaEdicion(Autor autor) {
+    public boolean ventanaEdicion(Autor autor, boolean esEdicion) {
         try {
                       
             FXMLLoader loader = new FXMLLoader();
@@ -152,6 +154,7 @@ public class AutoresController implements Initializable, BotonesTipicos {
             EditAutoresController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setAutor(autor);
+            controller.setEdicion(esEdicion);
  
             dialogStage.showAndWait();
             
@@ -173,7 +176,8 @@ public class AutoresController implements Initializable, BotonesTipicos {
         
         Colecciones.getAutores().setAutoresObs(autoresData);
         Autor autor = new Autor();
-        if (ventanaEdicion(autor) ) {
+        if (ventanaEdicion(autor, false) ) {
+            autorSQL.insert(autor.getIDI(), autor.getNombre(), autor.getNacionalidad(), autor.getFechaNacStr() );   
             tablaAutores.getItems().add(autor);
         }
         
@@ -188,7 +192,18 @@ public class AutoresController implements Initializable, BotonesTipicos {
         
         if (autor != null) {
             
-            if (ventanaEdicion(autor)) {
+            int codigo = autor.getIDI();
+            
+            if (ventanaEdicion(autor, true)) {
+                
+                if (codigo != autor.getIDI()) {
+                    
+                    
+                    autorSQL.delete(codigo);
+                    autorSQL.insert(autor.getIDI(), autor.getNombre(), autor.getNacionalidad(), autor.getFechaNacStr() );   
+                    
+                }
+ 
                 mostrarDetAutor(autor);
             }
             
@@ -207,6 +222,9 @@ public class AutoresController implements Initializable, BotonesTipicos {
         
         if (indice >= 0) {
             if (Utilidades.estaSeguro("Autor")) {
+                
+                autorSQL.delete(tablaAutores.getSelectionModel().getSelectedItem().getIDI());
+                
                 tablaAutores.getItems().remove(indice);
             }
         }
@@ -230,10 +248,10 @@ public class AutoresController implements Initializable, BotonesTipicos {
         
         Scene menuScene = new Scene(root1);
         
-        Stage app_Stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage nuevaStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        app_Stage.setScene(menuScene);
-        app_Stage.show();
+        nuevaStage.setScene(menuScene);
+        nuevaStage.show();
     }
     
     

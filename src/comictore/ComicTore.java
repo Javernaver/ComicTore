@@ -24,12 +24,15 @@ public class ComicTore extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         try{
-            Parent root = FXMLLoader.load(getClass().getResource("/comictore/pantallas/FXMLMenu.fxml"));
 
+           Parent root = FXMLLoader.load(getClass().getResource("/comictore/pantallas/FXMLMenu.fxml"));
+            
+            
             Scene scene = new Scene(root);
-
-            stage.setScene(scene);
+            
+            stage.setScene(scene);  
             stage.show();
+            
         }
         catch(IOException ex){
             System.err.println(ex);
@@ -40,6 +43,7 @@ public class ComicTore extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws ParseException {
+        
         Inicio.cargar();
                
         

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="485.0" prefWidth="723.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comictore.controladores.FXMLMenuController">
+<AnchorPane id="AnchorPane" prefHeight="492.0" prefWidth="729.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comictore.controladores.FXMLMenuController">
     <children>
       <Group layoutX="60.0" layoutY="119.0">
          <children>
@@ -16,5 +16,10 @@
          </children>
       </Group>
       <Label layoutX="146.0" layoutY="90.0" text="Administracion" />
+      <Button layoutX="518.0" layoutY="390.0" mnemonicParsing="false" onAction="#btnSalir" prefHeight="47.0" prefWidth="142.0" text="Salir" AnchorPane.bottomAnchor="17.0" AnchorPane.rightAnchor="17.0" />
+      <Button layoutX="365.0" layoutY="119.0" mnemonicParsing="false" onAction="#btnEditorialMasVendida" prefHeight="36.0" prefWidth="136.0" text="Editorial Mas Vendida" />
+      <Button layoutX="84.0" layoutY="339.0" mnemonicParsing="false" onAction="#btnVenta" prefHeight="47.0" prefWidth="142.0" text="Nueva Venta" />
+      <Button layoutX="365.0" layoutY="189.0" mnemonicParsing="false" onAction="#btnVentasComics" prefHeight="36.0" prefWidth="136.0" text="Top Ventas de Comics" />
+      <Button layoutX="516.0" layoutY="119.0" mnemonicParsing="false" onAction="#btnAutoresMasVentas" prefHeight="36.0" prefWidth="178.0" text="Top Autores con mas Ventas" />
     </children>
 </AnchorPane>

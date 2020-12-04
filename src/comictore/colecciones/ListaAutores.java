@@ -77,8 +77,9 @@ public class ListaAutores {
     
     
     public boolean autorRepetido(Autor aut) {
-        
-        return (autores.stream().anyMatch((auto) -> (auto.equals(aut))) );               
+        if (aut != null)
+            return (autores.stream().anyMatch((auto) -> (auto.equals(aut))) );               
+        return false;
     }
     
     public int largo() {
@@ -121,5 +122,31 @@ public class ListaAutores {
         }        
     }
     
+    public Autor getAutorCod(int codigo) {
+        
+        for (Autor aut : autores) {
+            if (Integer.parseInt(aut.getID()) == codigo) {
+                return aut;
+            }
+        }
+        
+        return null;
+    }
     
+    public Autor getAutorMasComics() {
+        if (autores.isEmpty()) return null;
+        Autor mayor = autores.get(0);
+        int masComic = mayor.getComics().largo();
+        
+        for (Autor autor : autores) {
+            
+            if (autor.getComics().largo() > masComic) {
+                mayor = autor;
+                masComic = mayor.getComics().largo();
+            }
+            
+        }
+        
+        return mayor;
+    }
 }

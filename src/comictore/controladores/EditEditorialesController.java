@@ -28,6 +28,7 @@ public class EditEditorialesController implements Initializable, InterfaceVentan
     private Stage dialogStage;
     private Editorial editorial;
     private boolean estaBien = false;
+    private boolean esEdicion;
     
     @FXML
     private TextField txtNombre;
@@ -82,14 +83,18 @@ public class EditEditorialesController implements Initializable, InterfaceVentan
         Editorial editorial2 = new Editorial();
         
         if (estaValidado()) {
+            if (esEdicion) 
+                editorial2.setCodigo(editorial.getCodigoI());
             
             editorial2.setNombre(txtNombre.getText());
             editorial2.setPais((String) selectorPais.getSelectionModel().getSelectedItem());
             editorial2.setAnioFundacion(Integer.parseInt(txtAnio.getText()));
+            if (!esEdicion)
+                editorial2.asignarCodigo();
             
-            editorial2.asignarCodigo();
+            boolean esRepetido = Colecciones.getEditoriales().editorialRepetida(editorial2);
             
-            if (!Colecciones.getEditoriales().editorialRepetida(editorial2)){
+            if (!esRepetido || esEdicion){
                 
                 editorial.clonar((Object) editorial2);
                 estaBien = true;
@@ -138,6 +143,10 @@ public class EditEditorialesController implements Initializable, InterfaceVentan
             return false;
         }
               
+    }
+
+    public void setEdicion(boolean esEdicion) {
+        this.esEdicion = esEdicion;
     }
     
 }

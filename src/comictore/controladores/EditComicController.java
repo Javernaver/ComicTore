@@ -31,6 +31,7 @@ public class EditComicController implements Initializable, InterfaceVentanas {
     private Stage dialogStage;
     private Comic comic;
     private boolean estaBien = false;
+    private boolean esEdicion;
     
     @FXML
     private ComboBox selectorAutor;
@@ -94,7 +95,9 @@ public class EditComicController implements Initializable, InterfaceVentanas {
     public void btnAceptar() {
         Comic comic2 = new Comic();
         if (estaValidado()) {
-            
+            if (esEdicion) {
+                comic2.setCodigo(comic.getCodigoI());
+            }
             comic2.setNombre(txtNombre.getText());
             comic2.setAnio(Integer.parseInt(txtAnio.getText()));
 
@@ -109,11 +112,13 @@ public class EditComicController implements Initializable, InterfaceVentanas {
             comic2.setPrecio(Integer.parseInt(txtPrecio.getText()));
             comic2.setVentas(Integer.parseInt(txtVentas.getText()));
             comic2.setStock(Integer.parseInt(txtStock.getText()));
-
-            comic2.setCodigo();
             
+            if (!esEdicion)
+                comic2.setCodigo();
             
-            if (!Colecciones.getComics().comicRepetido(comic2)) { // si el comic no esta en la coleccion se guarda
+            boolean esRepetido = Colecciones.getComics().comicRepetido(comic2);
+            
+            if (!esRepetido || esEdicion) { // si el comic no esta en la coleccion se guarda
                 comic.clonar((Object) comic2); // guardar el comic en el objeto vinculado a la lista
                 estaBien = true;
                 dialogStage.close();
@@ -214,6 +219,11 @@ public class EditComicController implements Initializable, InterfaceVentanas {
             Utilidades.datosErroneos(mensajeError);
             return false;
         }
+        
+    }
+
+    public void setEdicion(boolean esEdicion) {
+        this.esEdicion = esEdicion;
         
     }
     

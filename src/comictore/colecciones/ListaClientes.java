@@ -68,6 +68,10 @@ public class ListaClientes {
         return clientes.indexOf(cliente);
     }
     
+    public int largo() {
+        return clientes.size();
+    }
+    
     public void addComicFav(Comic comic) {
         
     }
@@ -77,7 +81,8 @@ public class ListaClientes {
     }
     
     public boolean clienteRepetido(Cliente cliente) {
-        
+       if (cliente != null)  
         return (clientes.stream().anyMatch((cli) -> (cli.equals(cliente))));  
+       return false;
     }
 }

@@ -4,6 +4,7 @@ package comictore.clases;
 
 import comictore.colecciones.ListaComics;
 import java.text.ParseException;
+import java.util.Comparator;
 
 public class Autor extends Persona {
     
@@ -46,8 +47,28 @@ public class Autor extends Persona {
         }
         
     }
-    
 
+    public int ventasAutor() {
+        
+        int suma = 0;
+        
+        for (int i = 0; i < comics.largo(); i++) {
+            suma += comics.getComic(i).getVentas();
+        }
+               
+        return suma;
+    }
+    
+    public static Comparator<Autor> porVentasMayorMenor = new Comparator<Autor>() {
+    
+        @Override
+        public int compare(Autor a1, Autor a2) {
+            int vent1 = a1.ventasAutor();
+            int vent2 = a2.ventasAutor();
+            
+            return vent2-vent1;
+        }
+    };
    
     
 }

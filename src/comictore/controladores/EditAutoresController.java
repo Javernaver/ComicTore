@@ -32,7 +32,7 @@ public class EditAutoresController implements Initializable, InterfaceVentanas {
     private Stage dialogStage;
     private Autor autor;
     private boolean estaBien = false;
-
+    private boolean esEdicion;
     
     @FXML
     private TextField txtNombre;
@@ -90,6 +90,8 @@ public class EditAutoresController implements Initializable, InterfaceVentanas {
         Autor autor2 = new Autor();
         
         if (estaValidado()) {
+            if (esEdicion)
+                autor2.setID(autor.getIDI());
             autor2.setNombre(txtNombre.getText());
             autor2.setNacionalidad((String) selectorPais.getSelectionModel().getSelectedItem());
             
@@ -99,9 +101,12 @@ public class EditAutoresController implements Initializable, InterfaceVentanas {
                 Logger.getLogger(EditAutoresController.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            autor2.asignarID();
+            if (!esEdicion)
+                autor2.asignarID();
             
-            if (!Colecciones.getAutores().autorRepetido(autor2)) {
+            boolean esRepetido = Colecciones.getAutores().autorRepetido(autor2);
+            
+            if (!esRepetido || esEdicion) {
                 
                 autor.clonar((Object) autor2);
                 estaBien = true;
@@ -144,5 +149,9 @@ public class EditAutoresController implements Initializable, InterfaceVentanas {
             Utilidades.datosErroneos(mensajeError);
             return false;
         }
+    }
+
+    public void setEdicion(boolean esEdicion) {
+        this.esEdicion = esEdicion;
     }
 }

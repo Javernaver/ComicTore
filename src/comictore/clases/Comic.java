@@ -1,6 +1,8 @@
 
 package comictore.clases;
 
+import java.util.Comparator;
+
 
 public class Comic extends Cosa {
     
@@ -120,9 +122,16 @@ public class Comic extends Cosa {
     }
     
     
-     public void unaVenta(){
+    public void venta(){
         ventas++;
+        stock--;
     }
+    
+    public void cancelarVenta() {
+        ventas--;
+        stock++;
+    }
+    
 
     /**
      * @return the stock
@@ -140,7 +149,22 @@ public class Comic extends Cosa {
 
     public void setCodigo() {
         super.asignarCodigo();
-        super.setCodigo(Integer.parseInt(super.getCodigo()) + getAutor().getNombre().hashCode() + getEditorial().getNombre().hashCode());
+        
+        long num = Integer.parseInt(super.getCodigo()) + getAutor().getNombre().hashCode() + getEditorial().getNombre().hashCode();
+        int num2;
+        if (num < 0) {
+            num = -num;
+        }
+        if (num > Integer.MAX_VALUE || (Math.log10(num) + 1) > 7) {
+           
+            num /= 1000;            
+        }
+        if ((Math.log10(num) + 1) < 7) {
+            num *= 10;
+        }
+        
+        num2 = (int) num;
+        super.setCodigo(num2);
     }
     /**
      * 
@@ -162,5 +186,18 @@ public class Comic extends Cosa {
            setStock(comic2.getStock());
        }
     }
+    
+    public static Comparator<Comic> porVentasMayorMenor = new Comparator<Comic>() {
+        
+        @Override
+        public int compare(Comic c1, Comic c2) {
+            int vent1 = c1.getVentas();
+            int vent2 = c2.getVentas();
+            
+            return vent2-vent1;
+        }
+        
+        
+    };
     
 }

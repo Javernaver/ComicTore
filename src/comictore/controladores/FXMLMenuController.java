@@ -1,6 +1,7 @@
 
 package comictore.controladores;
 
+import comictore.inicio.Inicio;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -9,9 +10,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -29,7 +32,7 @@ public class FXMLMenuController implements Initializable {
         
         stageMenuPrincipal =  (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        initRootLayout();
+        initRootLayout(1);
 
         mostrarComics();
         
@@ -53,10 +56,10 @@ public class FXMLMenuController implements Initializable {
     @FXML
     private void btnEditoriales(ActionEvent event) throws IOException {
         
-        stageMenuPrincipal =  (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stageMenuPrincipal = (Stage) ((Node) event.getSource()).getScene().getWindow();
             
         
-        initRootLayout();
+        initRootLayout(2);
         
         mostrarEditoriales();        
     }
@@ -85,7 +88,7 @@ public class FXMLMenuController implements Initializable {
         stageMenuPrincipal =  (Stage) ((Node) event.getSource()).getScene().getWindow();
             
         
-        initRootLayout();
+        initRootLayout(3);
         
         mostrarAutores();
         
@@ -112,7 +115,7 @@ public class FXMLMenuController implements Initializable {
         stageMenuPrincipal =  (Stage) ((Node) event.getSource()).getScene().getWindow();
             
         
-        initRootLayout();
+        initRootLayout(4);
         
         mostrarClientes();
         
@@ -132,16 +135,18 @@ public class FXMLMenuController implements Initializable {
         }
     }
     
-    public void initRootLayout() {
+    public void initRootLayout(int modo) {
             
         try {
             
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/comictore/pantallas/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();                    
+            RootLayoutController controller = loader.getController();
+            controller.setModo(modo);
             
             Scene scene = new Scene(rootLayout);
-            stageMenuPrincipal.setTitle("Comics");
+            stageMenuPrincipal.setTitle("ComicTore");
             stageMenuPrincipal.setResizable(false);
             stageMenuPrincipal.setScene(scene);
             stageMenuPrincipal.show();
@@ -152,18 +157,94 @@ public class FXMLMenuController implements Initializable {
     }
 
 
-   
+    @FXML
+    public void btnSalir() {
+        
+        Inicio.guardar();
+        
+        System.exit(0);
+    }
+    
+    
+    private void nuevaVentana(String rutaFXML, String titulo, int tipo) throws IOException {
+        
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource(rutaFXML));
+        AnchorPane page = (AnchorPane) loader.load();
+ 
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle(titulo);
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(stageMenuPrincipal);
+        Scene scene = new Scene(page);
+        dialogStage.setScene(scene);
+        dialogStage.setResizable(false);
+        
+        switch (tipo) {
+            case 1 : EditorialMasVendidaController controller = loader.getController();
+                     controller.setStage(dialogStage);
+                     break;
+            case 2 : TopVentasComicsController controller2 = loader.getController();
+                     controller2.setStage(dialogStage);
+                     break;
+            case 3 : TopAutoresMasVentasController controller3 = loader.getController();
+                     controller3.setStage(dialogStage);
+                     break;
+        }
 
+        dialogStage.showAndWait();
+        
+    }
+    
+    
+    @FXML
+    public void btnEditorialMasVendida(ActionEvent event) throws IOException {
+          
+        nuevaVentana("/comictore/pantallas/EditorialMasVendida.fxml", "Editorial con más Ventas", 1);
+      
+        
+    }
+    
+    @FXML
+    public void btnVentasComics() throws IOException {
+        
+        nuevaVentana("/comictore/pantallas/TopVentasComics.fxml", "Top de Ventas de Comics", 2);
+    
+    }
+    
+    @FXML
+    public void btnAutoresMasVentas() throws IOException {
+        
+        nuevaVentana("/comictore/pantallas/TopAutoresMasVentas.fxml", "Top de Autores con más ventas", 3);
+ 
+    }
 
     public static Stage getStageMenuPrincipal() {
         return stageMenuPrincipal;
     }
     
+    @FXML
+    public void btnVenta(ActionEvent event) throws IOException {
+        
+        Parent root1 = FXMLLoader.load(getClass().getResource("/comictore/pantallas/Venta.fxml"));
+      
+        Scene menuScene = new Scene(root1);
+        
+        Stage nuevaStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        nuevaStage.setScene(menuScene);
+        nuevaStage.setResizable(false);
+        nuevaStage.show();
+    }    
+    
+    
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+       
     }    
+
+ 
     
 }

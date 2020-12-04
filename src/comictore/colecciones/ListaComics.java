@@ -65,12 +65,21 @@ public class ListaComics {
     }
 
     public boolean comicRepetido(Comic comic) {
-        
-        return comics.stream().anyMatch( (com) -> (com.equals(comic)) );
-        
+        if (comic != null)
+            return comics.stream().anyMatch( (com) -> (com.equals(comic)) );
+        return false;
     }
     
     public int largo() {
         return comics.size();
+    }
+    
+    public Comic getComicCod(int codigo) {
+        for (Comic co : comics) {
+            if (Integer.parseInt(co.getCodigo()) == codigo) {
+                return co;
+            }
+        }
+        return null;
     }
 }

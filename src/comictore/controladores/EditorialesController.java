@@ -7,6 +7,7 @@ package comictore.controladores;
 
 import comictore.clases.Comic;
 import comictore.clases.Editorial;
+import comictore.clases.clasesSQL.EditorialSQL;
 import comictore.colecciones.ListaComics;
 import comictore.inicio.Colecciones;
 import comictore.interfaces.BotonesTipicos;
@@ -62,6 +63,7 @@ public class EditorialesController implements Initializable, BotonesTipicos {
     private final ObservableList<Editorial> editorialesData = Colecciones.getEditoriales().getEditorialesObs();
     private ObservableList<Comic> comicsData;
     
+    private final EditorialSQL editorialSQL = new EditorialSQL();
     
     public void mostrarDetEditorial(Editorial editorial){
         
@@ -122,7 +124,7 @@ public class EditorialesController implements Initializable, BotonesTipicos {
        
     }    
     
-    public boolean ventanaEdicion(Editorial editorial) {
+    public boolean ventanaEdicion(Editorial editorial, boolean esEdicion) {
         try {
                       
             FXMLLoader loader = new FXMLLoader();
@@ -143,6 +145,7 @@ public class EditorialesController implements Initializable, BotonesTipicos {
             EditEditorialesController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setEditorial(editorial);
+            controller.setEdicion(esEdicion);
  
             dialogStage.showAndWait();
             
@@ -161,7 +164,8 @@ public class EditorialesController implements Initializable, BotonesTipicos {
     public void btnAgregar() {
         Colecciones.getEditoriales().setEditorialesObs(editorialesData);
         Editorial editorial = new Editorial();
-        if ( ventanaEdicion(editorial) ){
+        if ( ventanaEdicion(editorial, false) ){
+            editorialSQL.insert(editorial.getCodigoI(), editorial.getNombre(), editorial.getPais(), editorial.getAnioFundacion() );
             tablaEditoriales.getItems().add(editorial);       
         }  
     }
@@ -175,6 +179,7 @@ public class EditorialesController implements Initializable, BotonesTipicos {
         
         if (indice >= 0) {
             if (Utilidades.estaSeguro("Editorial")) {
+                editorialSQL.delete(tablaEditoriales.getSelectionModel().getSelectedItem().getCodigoI());
                 tablaEditoriales.getItems().remove(indice);
             }
         }
@@ -192,7 +197,17 @@ public class EditorialesController implements Initializable, BotonesTipicos {
         Colecciones.getEditoriales().setEditorialesObs(editorialesData);
         
         if (editorial != null) {
-            if (ventanaEdicion(editorial)) {
+            
+            int codigo = editorial.getCodigoI();
+            
+            if (ventanaEdicion(editorial, true)) {
+                
+                if (codigo != editorial.getCodigoI()) {
+                    
+                    editorialSQL.delete(codigo);
+                    editorialSQL.insert(editorial.getCodigoI(), editorial.getNombre(), editorial.getPais(), editorial.getAnioFundacion() );
+                }
+                
                 mostrarDetEditorial(editorial);
             }
         }
@@ -216,10 +231,10 @@ public class EditorialesController implements Initializable, BotonesTipicos {
         
         Scene menuScene = new Scene(root1);
         
-        Stage app_Stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage nuevaStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        app_Stage.setScene(menuScene);
-        app_Stage.show();
+        nuevaStage.setScene(menuScene);
+        nuevaStage.show();
     
      // FXMLMenuController.getStageMenuPrincipal().close();
 

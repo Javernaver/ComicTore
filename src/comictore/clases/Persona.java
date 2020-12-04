@@ -40,6 +40,10 @@ public abstract class Persona implements Serializable {
         return id;
     }
     
+    public int getIDI() {
+        return Integer.parseInt(id.get());
+    }
+    
     public void setID(int id) {
       if (id > 0)  
         this.id.set(Integer.toString(id));
@@ -128,10 +132,20 @@ public abstract class Persona implements Serializable {
     @Override
     public int hashCode() {
 
-        int hash = 7;
-        hash = 13 + hash + this.nombre.get().hashCode() + this.nacionalidad.hashCode();
-        if (hash < 0)
-            return -hash;
+        int hash;
+        long hash2 = 7;
+        hash2 = 13 + hash2 + this.nombre.get().hashCode() + this.nacionalidad.hashCode();
+        if (hash2 < 0)
+            hash2 = -hash2;        
+        if (hash2 > Integer.MAX_VALUE || (Math.log10(hash2) + 1) > 7) {          
+            hash2 /= 1000;            
+        }
+        if ((Math.log10(hash2) + 1) < 7) {
+            hash2 *= 10;
+        }
+        
+        hash = (int) hash2;
+       
         return hash;
             
     }

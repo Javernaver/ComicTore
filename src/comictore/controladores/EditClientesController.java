@@ -32,6 +32,7 @@ public class EditClientesController implements Initializable, InterfaceVentanas 
     private Stage dialogStage;
     private Cliente cliente;
     private boolean estaBien = false;
+    private boolean esEdicion;
         
     @FXML
     private TextField txtNombre;
@@ -92,6 +93,8 @@ public class EditClientesController implements Initializable, InterfaceVentanas 
         Cliente cliente2 = new Cliente();
         
         if (estaValidado()) {
+            if (esEdicion)
+                cliente2.setID(cliente.getIDI());
             
             cliente2.setNombre(txtNombre.getText());
             cliente2.setNacionalidad((String) selectorPais.getSelectionModel().getSelectedItem());
@@ -101,10 +104,14 @@ public class EditClientesController implements Initializable, InterfaceVentanas 
             } catch (ParseException ex) {
                 Logger.getLogger(EditClientesController.class.getName()).log(Level.SEVERE, null, ex);
             }
+            cliente2.setEmail(txtEmail.getText());
             
-            cliente2.asignarID();
+            if (!esEdicion)
+                cliente2.asignarID();
             
-            if (!Colecciones.getClientes().clienteRepetido(cliente2)) {
+            boolean esRepetido = Colecciones.getClientes().clienteRepetido(cliente2);
+            
+            if (!esRepetido || esEdicion) {
                 
                 cliente.clonar((Object) cliente2);
                 estaBien = true;
@@ -155,6 +162,10 @@ public class EditClientesController implements Initializable, InterfaceVentanas 
         }
         
         
+    }
+
+    public void setEdicion(boolean esEdicion) {
+        this.esEdicion = esEdicion;
     }
     
 }

@@ -8,6 +8,7 @@ package comictore.controladores;
 import comictore.clases.Autor;
 import comictore.clases.Comic;
 import comictore.clases.Editorial;
+import comictore.clases.clasesSQL.ComicSQL;
 import comictore.inicio.Colecciones;
 import comictore.interfaces.BotonesTipicos;
 import comictore.utilidades.Utilidades;
@@ -41,6 +42,8 @@ public class ComicsController implements Initializable, BotonesTipicos {
     private TableColumn<Comic, String> columnaCodigo;
     @FXML
     private TableColumn<Comic, String> columnaNombre;
+    
+    
 
     @FXML
     private Label nombre;
@@ -63,6 +66,7 @@ public class ComicsController implements Initializable, BotonesTipicos {
     
     private final ObservableList<Comic> comicsData = Colecciones.getComics().getComicsObs();
     
+    private final ComicSQL comicSQL = new ComicSQL();
 
     
     @FXML
@@ -78,13 +82,13 @@ public class ComicsController implements Initializable, BotonesTipicos {
         
         Scene menuScene = new Scene(root1);
         
-        Stage app_Stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage nuevaStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        app_Stage.setScene(menuScene);
-        app_Stage.show();
+        nuevaStage.setScene(menuScene);
+        nuevaStage.show();
         
        
-     // FXMLMenuController.getStageMenuPrincipal().close();
+ 
        
 
     }
@@ -141,9 +145,10 @@ public class ComicsController implements Initializable, BotonesTipicos {
     /**
      * 
      * @param comic 
+     * @param esEdicion 
      * @return 
      */
-    public boolean ventanaEdicion(Comic comic) {
+    public boolean ventanaEdicion(Comic comic, boolean esEdicion) {
         try {
                       
             FXMLLoader loader = new FXMLLoader();
@@ -164,7 +169,8 @@ public class ComicsController implements Initializable, BotonesTipicos {
             EditComicController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setComic(comic);
- 
+            controller.setEdicion(esEdicion);
+            
             dialogStage.showAndWait();
             
    
@@ -182,7 +188,8 @@ public class ComicsController implements Initializable, BotonesTipicos {
     public void btnAgregar() {
         Colecciones.getComics().setComicsObs(comicsData);
         Comic comic = new Comic();
-        if ( ventanaEdicion(comic) ){
+        if ( ventanaEdicion(comic, false) ){
+            comicSQL.insert(comic.getCodigoI(), comic.getNombre(), comic.getAnio(), comic.getPais(), comic.getEditorial().getCodigoI(), comic.getAutor().getIDI(), comic.getIdioma(), comic.getPrecio(), comic.getVentas(), comic.getStock()); 
             tablaComics.getItems().add(comic);
             Colecciones.getEditoriales().addComicEditorial(comic.getEditorial() , comic);
         }      
@@ -201,9 +208,11 @@ public class ComicsController implements Initializable, BotonesTipicos {
             
             Editorial edi = comic.getEditorial();
             Autor aut = comic.getAutor();
+            int codigo = comic.getCodigoI();
             
-            if ( ventanaEdicion(comic) ) {
+            if ( ventanaEdicion(comic, true) ) {
                 
+                // actualizar informacion de la editorial si cambio
                 if (edi != comic.getEditorial()){
                     
                     edi.getComics().getComics().remove(comic);
@@ -211,6 +220,7 @@ public class ComicsController implements Initializable, BotonesTipicos {
                     Colecciones.getEditoriales().addComicEditorial(comic.getEditorial(), comic);
                 }
                 
+                // actualizar informacion del autor si cambio
                 if (aut != comic.getAutor()) {
                     
                     aut.getComics().getComics().remove(comic);
@@ -218,6 +228,14 @@ public class ComicsController implements Initializable, BotonesTipicos {
                     Colecciones.getAutores().addComicAutor(comic.getAutor(), comic);
                     
                 }
+                
+                // actualizar BD
+               // if (codigo != comic.getCodigoI()) {
+                    
+                    //comicSQL.update(comic.getCodigoI(), comic.getNombre(), comic.getAnio(), comic.getPais(), comic.getEditorial().getCodigoI(), comic.getAutor().getIDI(), comic.getIdioma(), comic.getPrecio(), comic.getVentas(), comic.getStock() );
+                    comicSQL.delete(comic.getCodigoI());
+                    comicSQL.insert(comic.getCodigoI(), comic.getNombre(), comic.getAnio(), comic.getPais(), comic.getEditorial().getCodigoI(), comic.getAutor().getIDI(), comic.getIdioma(), comic.getPrecio(), comic.getVentas(), comic.getStock()); 
+               // }
                 
                 mostrarDetComic(comic);   
             }
@@ -236,7 +254,11 @@ public class ComicsController implements Initializable, BotonesTipicos {
        
         if (indice >= 0) {
             if ( Utilidades.estaSeguro("Comic") ) {
+                
+                comicSQL.delete(tablaComics.getSelectionModel().getSelectedItem().getCodigoI());
+                
                 tablaComics.getItems().remove(indice);
+                
             }
         }
         else {
